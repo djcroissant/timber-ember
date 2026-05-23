@@ -1,0 +1,26 @@
+# Exclude virtual environments
+venv/
+.venv/
+env/
+
+# Exclude python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Exclude git history
+.git/
+.gitignore
+
+# Exclude Docker configs
+.dockerignore
+Dockerfile
+
+# Exclude local database files
+timber_ember.db
+timber_ember.db-journal
+*.db
+
+# Exclude macOS temporary files
+.DS_Store

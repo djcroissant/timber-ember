@@ -2,8 +2,10 @@
 venv/
 .venv/
 env/
-# Local SQLite Database Journal (Lockfiles)
+# Local SQLite Database & Journal
+timber_ember.db
 timber_ember.db-journal
+*.db
 
 # Python Caches & Compiled Bytecode
 __pycache__/

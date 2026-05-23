@@ -1,15 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import os
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
-DB_PATH = 'timber_ember.db'
-
-def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+# Use environment variable for session secret key to remain stable in multi-instance containers
+app.secret_key = os.environ.get("SESSION_SECRET_KEY", "timber-ember-default-secret-key-1289")
 
 # Categories data dictionary to populate pages and validation
 CATEGORIES_DATA = {
@@ -87,15 +81,12 @@ def contact():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
-        message = request.form.get('message')
-        # Here we just flash a message since it's a contact form, but we can log it
         flash(f"Thank you, {name}! Your message has been received. We will contact you at {email} soon.", "success")
         return redirect(url_for('contact'))
     return render_template('contact.html')
 
 @app.route('/category/<name>')
 def category(name):
-    # Normalize name (replace underscores with hyphens if needed)
     name = name.lower()
     if name not in CATEGORIES_DATA:
         flash("Category not found.", "warning")
@@ -120,114 +111,49 @@ def submit_quote():
         dimensions = request.form.get('dimensions')
         finish = request.form.get('finish')
         
-        # Get selected addons
         addons_list = request.form.getlist('addons')
         addons = ", ".join(addons_list) if addons_list else "None"
         
-        # Get estimated price
         estimated_price_raw = request.form.get('estimated_price', '0')
         estimated_price = float(estimated_price_raw.replace('$', '').replace(',', '').strip())
         
         message = request.form.get('message', '')
 
-        # Basic server-side validation
         if not all([name, email, phone, category_id, wood_type, dimensions, finish]):
             flash("Please fill in all required fields.", "error")
             return redirect(url_for('configurator', category=category_id))
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO quotes (name, email, phone, category, wood_type, dimensions, finish, addons, estimated_price, message, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')
-        ''', (name, email, phone, category_id, wood_type, dimensions, finish, addons, estimated_price, message))
-        
-        quote_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
+        # Store quote request specifications in client-side cookie session
+        session['quote_data'] = {
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'category': category_id,
+            'wood_type': wood_type,
+            'dimensions': dimensions,
+            'finish': finish,
+            'addons': addons,
+            'estimated_price': estimated_price,
+            'message': message
+        }
 
-        return redirect(url_for('quote_success', quote_id=quote_id))
+        return redirect(url_for('quote_success'))
 
     except Exception as e:
         flash(f"An error occurred while submitting your request: {str(e)}", "error")
         return redirect(url_for('configurator'))
 
-@app.route('/quote_success/<int:quote_id>')
-def quote_success(quote_id):
-    conn = get_db_connection()
-    quote = conn.execute('SELECT * FROM quotes WHERE id = ?', (quote_id,)).fetchone()
-    conn.close()
-    
+@app.route('/quote_success')
+def quote_success():
+    quote = session.get('quote_data')
     if not quote:
-        flash("Quote details not found.", "warning")
+        flash("No active quote request details found.", "warning")
         return redirect(url_for('index'))
         
-    # Get human-readable category name
     cat_title = CATEGORIES_DATA.get(quote['category'], {}).get('title', quote['category'])
     return render_template('quote_success.html', quote=quote, category_title=cat_title)
 
-@app.route('/dashboard')
-def dashboard():
-    status_filter = request.args.get('status', 'All')
-    category_filter = request.args.get('category', 'All')
-    
-    query = 'SELECT * FROM quotes'
-    conditions = []
-    params = []
-    
-    if status_filter != 'All':
-        conditions.append('status = ?')
-        params.append(status_filter)
-        
-    if category_filter != 'All':
-        conditions.append('category = ?')
-        params.append(category_filter)
-        
-    if conditions:
-        query += ' WHERE ' + ' AND '.join(conditions)
-        
-    query += ' ORDER BY created_at DESC'
-    
-    conn = get_db_connection()
-    quotes = conn.execute(query, params).fetchall()
-    conn.close()
-    
-    # Calculate some dashboard stats for premium dashboard feel
-    conn = get_db_connection()
-    total_quotes = conn.execute('SELECT COUNT(*) FROM quotes').fetchone()[0]
-    pending_quotes = conn.execute("SELECT COUNT(*) FROM quotes WHERE status = 'Pending'").fetchone()[0]
-    approved_quotes = conn.execute("SELECT COUNT(*) FROM quotes WHERE status = 'In Progress'").fetchone()[0]
-    total_value = conn.execute("SELECT SUM(estimated_price) FROM quotes WHERE status != 'Cancelled'").fetchone()[0] or 0
-    conn.close()
-    
-    stats = {
-        'total': total_quotes,
-        'pending': pending_quotes,
-        'in_progress': approved_quotes,
-        'value': total_value
-    }
-    
-    return render_template('dashboard.html', 
-                           quotes=quotes, 
-                           stats=stats, 
-                           selected_status=status_filter, 
-                           selected_category=category_filter,
-                           categories_data=CATEGORIES_DATA)
-
-@app.route('/dashboard/update_status/<int:quote_id>', methods=['POST'])
-def update_status(quote_id):
-    status = request.form.get('status')
-    if status in ['Pending', 'In Progress', 'Completed', 'Cancelled']:
-        conn = get_db_connection()
-        conn.execute('UPDATE quotes SET status = ? WHERE id = ?', (status, quote_id))
-        conn.commit()
-        conn.close()
-        flash(f"Quote #{quote_id} status updated to '{status}'.", "success")
-    else:
-        flash("Invalid status selected.", "error")
-        
-    return redirect(url_for('dashboard'))
-
 if __name__ == '__main__':
-    # Running locally
-    app.run(debug=True, port=5000)
+    # Cloud Run expects the app to bind to PORT environment variable, defaulting to 8080
+    port = int(os.environ.get("PORT", 8080))
+    app.run(debug=True, host='0.0.0.0', port=port)
