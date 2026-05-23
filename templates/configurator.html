@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Interactive Customizer | Timber & Ember{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="section-container">
+        <div class="section-header" style="margin-bottom: 3.5rem;">
+            <h1 class="section-title" style="font-family: var(--font-heading);">Interactive Design Builder</h1>
+            <p class="section-subtitle">Select a category, configure dimensions, specify materials, and receive a real-time custom cost estimate. Submit to request a formal workshop quote.</p>
+        </div>
+        
+        <div class="configurator-layout">
+            <!-- Left Customizer Controls Panel -->
+            <div class="configurator-controls">
+                <!-- Project Category Tabs -->
+                <div class="config-section">
+                    <span class="config-section-title">1. Select Project Type</span>
+                    <div class="category-tabs">
+                        <button type="button" class="tab-btn {% if selected_category == 'tables' %}active{% endif %}" data-category="tables">Tables</button>
+                        <button type="button" class="tab-btn {% if selected_category == 'cutting-boards' %}active{% endif %}" data-category="cutting-boards">Cutting Boards</button>
+                        <button type="button" class="tab-btn {% if selected_category == 'saunas' %}active{% endif %}" data-category="saunas">Saunas</button>
+                    </div>
+                </div>
+                
+                <!-- Wood Species Selection -->
+                <div class="config-section">
+                    <span class="config-section-title">2. Select Timber / Pattern</span>
+                    <div id="wood-options-grid" class="wood-selector-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Sizing & Dimensions -->
+                <div class="config-section">
+                    <span class="config-section-title">3. Configure Size Specifications</span>
+                    <div id="dimensions-section">
+                        <!-- Populated by JavaScript based on category (sliders or dropdown) -->
+                    </div>
+                </div>
+
+                <!-- Finishes Selection -->
+                <div class="config-section">
+                    <span class="config-section-title">4. Finish Treatment</span>
+                    <div class="form-group">
+                        <select id="finish-select" aria-label="Select wood finish treatment">
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Addons & Upgrades -->
+                <div class="config-section" style="margin-bottom: 0;">
+                    <span class="config-section-title">5. Addons & Premium Upgrades</span>
+                    <div id="addons-list" class="option-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Summary Sticky Panel -->
+            <div class="configurator-summary">
+                <h3 class="config-title">Project Summary</h3>
+                <ul class="summary-spec-list">
+                    <li class="summary-spec-item">
+                        <span>Project Type</span>
+                        <span id="summary-category">Tables</span>
+                    </li>
+                    <li class="summary-spec-item">
+                        <span>Timber Species</span>
+                        <span id="summary-wood">Black Walnut</span>
+                    </li>
+                    <li class="summary-spec-item">
+                        <span>Dimensions</span>
+                        <span id="summary-size">72"L × 36"W × 30"H</span>
+                    </li>
+                    <li class="summary-spec-item">
+                        <span>Finish Treatment</span>
+                        <span id="summary-finish">Satin Hardwax Oil</span>
+                    </li>
+                    <li class="summary-spec-item" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; border-bottom: none;">
+                        <span>Selected Addons</span>
+                        <ul id="summary-addons" style="list-style: none; padding-left: 0; font-size: 0.85rem; width: 100%; display: flex; flex-direction: column; gap: 0.25rem;">
+                            <!-- Populated by JavaScript -->
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="summary-price-box">
+                    <span class="price-est-label">Estimated Base Cost</span>
+                    <div id="summary-price" class="price-est-val">$0.00</div>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block; margin-top: 0.5rem;">Excludes crating, shipping, or sales taxes.</span>
+                </div>
+                
+                <button type="button" id="open-quote-modal" class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                    Request Custom Quote
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quote Request Form Modal Overlay -->
+<div id="quote-modal" class="dialog-overlay" aria-hidden="true" role="dialog">
+    <div class="dialog-box">
+        <div class="dialog-header">
+            <h3 class="dialog-title">Submit Quote Request</h3>
+            <button type="button" id="close-quote-modal" class="dialog-close" aria-label="Close dialog">×</button>
+        </div>
+        
+        <form id="modal-quote-form" action="{{ url_for('submit_quote') }}" method="POST">
+            <!-- Hidden Fields with specs filled by pricing JS -->
+            <input type="hidden" name="category" id="form-category">
+            <input type="hidden" name="wood_type" id="form-wood">
+            <input type="hidden" name="dimensions" id="form-dimensions">
+            <input type="hidden" name="finish" id="form-finish">
+            <input type="hidden" name="estimated_price" id="form-price">
+            
+            <div class="form-group">
+                <label for="input-name">Your Full Name *</label>
+                <input type="text" id="input-name" name="name" required placeholder="e.g. Liam Vance" aria-required="true">
+            </div>
+            
+            <div class="form-group">
+                <label for="input-email">Email Address *</label>
+                <input type="email" id="input-email" name="email" required placeholder="e.g. name@example.com" aria-required="true">
+            </div>
+            
+            <div class="form-group">
+                <label for="input-phone">Phone Number *</label>
+                <input type="tel" id="input-phone" name="phone" required placeholder="e.g. (541) 555-1234" aria-required="true">
+            </div>
+            
+            <div class="form-group">
+                <label for="input-msg">Workshop Notes & Requests</label>
+                <textarea id="input-msg" name="message" rows="4" placeholder="Detail any custom details (e.g. special steel base finish, custom wood engravings, unique delivery/assembly details)..."></textarea>
+            </div>
+            
+            <div style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('quote-modal').classList.remove('open')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Commission Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

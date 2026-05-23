@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Timber & Ember | Custom Woodworking & Saunas{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background-image: url('{{ url_for('static', filename='images/hero_bg.png') }}');">
+    <div class="hero-content">
+        <span class="hero-tag">Handcrafted in Oregon</span>
+        <h1 class="hero-title">Custom Furniture & Saunas Crafted for Generations</h1>
+        <p class="hero-subtitle">We select premium Pacific Northwest hardwoods to build custom dining tables, end-grain cutting boards, and outdoor cedar saunas tailored precisely to your vision.</p>
+        <div class="hero-actions">
+            <a href="{{ url_for('configurator') }}" class="btn btn-primary">Design Your Project</a>
+            <a href="#categories" class="btn btn-secondary">Explore Categories</a>
+        </div>
+    </div>
+</section>
+
+<!-- Main Woodworking Categories Showcase -->
+<section id="categories" class="section-padding">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">Bespoke Woodworking Categories</h2>
+            <p class="section-subtitle">Choose a category to explore wood selections, construction details, and start configuring your custom build.</p>
+        </div>
+        
+        <div class="category-grid">
+            <!-- Custom Tables Card -->
+            <article class="category-card">
+                <div class="card-img-wrapper">
+                    <img src="{{ url_for('static', filename='images/table_walnut.png') }}" alt="Bespoke live edge walnut dining table with steel legs" loading="lazy">
+                    <span class="card-overlay-badge">Tables</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">Custom Dining & Coffee Tables</h3>
+                    <p class="card-desc">From rustic live-edge slabs of Black Walnut to clean-lined modern White Oak desks. Built with traditional mortise & tenon joinery and coated in heavy-duty commercial finishes.</p>
+                    <div class="card-footer">
+                        <div>
+                            <span class="price-label">Starts at</span>
+                            <div class="price-value">$1,200</div>
+                        </div>
+                        <a href="{{ url_for('category', name='tables') }}" class="card-link" aria-label="Explore custom tables details">Explore Slabs</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Custom Cutting Boards Card -->
+            <article class="category-card">
+                <div class="card-img-wrapper">
+                    <img src="{{ url_for('static', filename='images/board_cherry.png') }}" alt="Geometric end-grain cherry and maple cutting board with juice groove" loading="lazy">
+                    <span class="card-overlay-badge">Kitchenware</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">End-Grain Cutting Boards</h3>
+                    <p class="card-desc">Chefs preference end-grain blocks that protect your premium knives. Features beautiful geometric patterns, deep perimeter juice grooves, and convenient side hand-grips.</p>
+                    <div class="card-footer">
+                        <div>
+                            <span class="price-label">Starts at</span>
+                            <div class="price-value">$120</div>
+                        </div>
+                        <a href="{{ url_for('category', name='cutting-boards') }}" class="card-link" aria-label="Explore custom cutting boards details">Explore Boards</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Custom Saunas Card -->
+            <article class="category-card">
+                <div class="card-img-wrapper">
+                    <img src="{{ url_for('static', filename='images/sauna_cedar.png') }}" alt="Outdoor barrel cedar sauna with glass wall in snow wood" loading="lazy">
+                    <span class="card-overlay-badge">Wellness</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">Bespoke Cedar Saunas</h3>
+                    <p class="card-desc">Outdoor barrel and cabin saunas constructed from aromatic Western Red Cedar. Choice of high-performance electric heaters or classic wood-burning Finnish stoves.</p>
+                    <div class="card-footer">
+                        <div>
+                            <span class="price-label">Starts at</span>
+                            <div class="price-value">$4,800</div>
+                        </div>
+                        <a href="{{ url_for('category', name='saunas') }}" class="card-link" aria-label="Explore custom saunas details">Explore Saunas</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Workshop Philosophy / Craftsmanship Details -->
+<section class="section-padding" style="background-color: var(--color-bg-secondary); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+    <div class="section-container" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 4rem; align-items: center;">
+        <div>
+            <h2 class="section-title" style="font-family: var(--font-heading);">Crafted with Intent, Built to Endure</h2>
+            <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem; line-height: 1.7; text-wrap: pretty;">At Timber & Ember, we believe furniture shouldn't be temporary. We reject the veneer-coated cardboard of mass-market manufacturers. Instead, we work exclusively with solid lumber sourced from sustainable Pacific Northwest forests.</p>
+            <p style="color: var(--color-text-secondary); margin-bottom: 2rem; line-height: 1.7; text-wrap: pretty;">We use age-old joinery techniques—like floating tenons and butterfly bowties—which allow the wood to expand and contract naturally with seasonal humidity, preventing splits and warping over the years.</p>
+            <a href="{{ url_for('about') }}" class="btn btn-secondary">Learn Our Process</a>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div style="background: var(--color-bg-primary); padding: 2rem; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌲</div>
+                <h4 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 0.5rem;">Sustainable Timber</h4>
+                <p style="font-size: 0.85rem; color: var(--color-text-secondary);">We harvest locally from sustainably managed forests or salvage trees cleared by local municipalities.</p>
+            </div>
+            <div style="background: var(--color-bg-primary); padding: 2rem; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📐</div>
+                <h4 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 0.5rem;">Custom Sized</h4>
+                <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Your home has specific spatial dimensions. Our configurator lets you design down to the exact inch.</p>
+            </div>
+            <div style="background: var(--color-bg-primary); padding: 2rem; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💧</div>
+                <h4 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 0.5rem;">Hardwax Finishes</h4>
+                <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Zero-VOC plant-based finishes that protect wood from spills while preserving its natural open-pore texture.</p>
+            </div>
+            <div style="background: var(--color-bg-primary); padding: 2rem; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛠️</div>
+                <h4 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 0.5rem;">Finnish Heritage</h4>
+                <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Our barrel saunas are built with traditional tongue-and-groove stave fitments providing absolute heat seals.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Premium Customer Testimonials -->
+<section class="section-padding">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">What Our Patrons Say</h2>
+            <p class="section-subtitle">Stories of custom furniture in modern homes.</p>
+        </div>
+        
+        <div class="category-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <blockquote style="background: var(--color-bg-secondary); border: 1px solid var(--color-border); padding: 2.5rem; border-radius: var(--border-radius-md); display: flex; flex-direction: column; justify-content: space-between;">
+                <p style="font-style: italic; font-size: 1rem; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">"The live edge Walnut dining table is the absolute centerpiece of our home. Everyone who walks in comments on it. The grain patterns are mesmerizing, and it feels incredibly robust."</p>
+                <footer style="font-weight: 600; font-size: 0.9rem; color: var(--color-text-primary); border-top: 1px solid var(--color-border); padding-top: 1rem;">
+                    — Clara & Donald P., Portland, OR
+                </footer>
+            </blockquote>
+            
+            <blockquote style="background: var(--color-bg-secondary); border: 1px solid var(--color-border); padding: 2.5rem; border-radius: var(--border-radius-md); display: flex; flex-direction: column; justify-content: space-between;">
+                <p style="font-style: italic; font-size: 1rem; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">"Our barrel sauna arrived in Bend and was assembled in a single afternoon. Sitting in the cedar-scented steam looking through the panoramic window at the Cascade range is our daily escape."</p>
+                <footer style="font-weight: 600; font-size: 0.9rem; color: var(--color-text-primary); border-top: 1px solid var(--color-border); padding-top: 1rem;">
+                    — Jeremy K., Bend, OR
+                </footer>
+            </blockquote>
+
+            <blockquote style="background: var(--color-bg-secondary); border: 1px solid var(--color-border); padding: 2.5rem; border-radius: var(--border-radius-md); display: flex; flex-direction: column; justify-content: space-between;">
+                <p style="font-style: italic; font-size: 1rem; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">"I purchased the maple & walnut checkerboard board for my husband (an avid home chef). It is so stunning we leave it on the kitchen counter permanently. Outstanding quality."</p>
+                <footer style="font-weight: 600; font-size: 0.9rem; color: var(--color-text-primary); border-top: 1px solid var(--color-border); padding-top: 1rem;">
+                    — Marcus & Julianna S., Seattle, WA
+                </footer>
+            </blockquote>
+        </div>
+    </div>
+</section>
+
+<!-- Final Call to Action -->
+<section class="section-padding" style="background: linear-gradient(135deg, var(--color-bg-tertiary) 0%, var(--color-bg-primary) 100%); border-top: 1px solid var(--color-border); text-align: center;">
+    <div class="section-container" style="max-width: 650px;">
+        <h2 class="section-title" style="font-family: var(--font-heading); margin-bottom: 1rem;">Ready to Begin Your Custom Commission?</h2>
+        <p style="color: var(--color-text-secondary); margin-bottom: 2.5rem; line-height: 1.6;">Use our interactive visual configurator to construct your dimensions, pick your wood species, choose additions, and request an instant pricing estimate.</p>
+        <a href="{{ url_for('configurator') }}" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1rem;">Launch Dynamic Customizer</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Timber & Ember | Custom Woodworking{% endblock %}</title>
+    <meta name="description" content="Hand-crafted custom woodworking projects. Tables, cutting boards, and saunas custom tailored to your dimensions and choice of wood species.">
+    <meta name="color-scheme" content="light dark">
+    
+    <!-- Google Fonts for Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Prevent Theme Flash of Unstyled Content (FOUC) -->
+    <script>
+        (function() {
+            const storedTheme = localStorage.getItem("color-scheme");
+            if (storedTheme) {
+                document.documentElement.setAttribute('data-theme', storedTheme);
+                document.querySelector('meta[name="color-scheme"]').setAttribute('content', storedTheme);
+            } else {
+                // Default to dark mode for premium wood branding, or system preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const initialTheme = prefersDark ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', initialTheme);
+                document.querySelector('meta[name="color-scheme"]').setAttribute('content', initialTheme);
+            }
+        })();
+    </script>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Floating Glassmorphic Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <a href="{{ url_for('index') }}" class="logo-link" id="nav-logo">
+                <span class="logo-symbol">🪵</span>
+                <span class="logo-text">TIMBER & EMBER</span>
+            </a>
+            
+            <nav class="desktop-nav" aria-label="Main Navigation">
+                <a href="{{ url_for('index') }}" class="nav-item">Home</a>
+                <div class="nav-dropdown">
+                    <span class="nav-item dropdown-toggle" tabindex="0">Custom Projects <span class="chevron">▼</span></span>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('category', name='tables') }}">Tables</a>
+                        <a href="{{ url_for('category', name='cutting-boards') }}">Cutting Boards</a>
+                        <a href="{{ url_for('category', name='saunas') }}">Saunas</a>
+                    </div>
+                </div>
+                <a href="{{ url_for('configurator') }}" class="nav-item nav-highlight">Customizer</a>
+                <a href="{{ url_for('about') }}" class="nav-item">Our Craft</a>
+                <a href="{{ url_for('contact') }}" class="nav-item">Contact</a>
+                <a href="{{ url_for('dashboard') }}" class="nav-item admin-link">CRM Portal</a>
+            </nav>
+
+            <div class="header-actions">
+                <!-- Theme Switcher Toggle Button -->
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle light/dark theme">
+                    <span class="sun-icon">☀️</span>
+                    <span class="moon-icon">🌙</span>
+                </button>
+                
+                <!-- Mobile Navigation Trigger -->
+                <button id="mobile-nav-toggle" class="mobile-toggle-btn" aria-label="Toggle mobile menu" aria-expanded="false">
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobile-nav-drawer" class="mobile-drawer" aria-hidden="true">
+        <div class="drawer-content">
+            <nav class="mobile-nav-links" aria-label="Mobile Navigation">
+                <a href="{{ url_for('index') }}" class="mobile-nav-item">Home</a>
+                <hr class="drawer-divider">
+                <span class="mobile-nav-category">Categories</span>
+                <a href="{{ url_for('category', name='tables') }}" class="mobile-nav-item sub-item">Tables</a>
+                <a href="{{ url_for('category', name='cutting-boards') }}" class="mobile-nav-item sub-item">Cutting Boards</a>
+                <a href="{{ url_for('category', name='saunas') }}" class="mobile-nav-item sub-item">Saunas</a>
+                <hr class="drawer-divider">
+                <a href="{{ url_for('configurator') }}" class="mobile-nav-item highlight">Custom Configurator</a>
+                <a href="{{ url_for('about') }}" class="mobile-nav-item">Our Craftsmanship</a>
+                <a href="{{ url_for('contact') }}" class="mobile-nav-item">Contact Shop</a>
+                <a href="{{ url_for('dashboard') }}" class="mobile-nav-item admin-link">CRM Portal</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert-container" id="alert-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        <span class="alert-message">{{ message }}</span>
+                        <button class="alert-close-btn" onclick="this.parentElement.remove()" aria-label="Close Alert">×</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content Area -->
+    <main class="page-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section brand-info">
+                <span class="footer-logo">TIMBER & EMBER</span>
+                <p class="footer-desc">Sustainable local timber. Time-honored joinery techniques. Premium natural finishes. Crafted for life.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram">📸 Instagram</a>
+                    <a href="#" aria-label="Pinterest">📌 Pinterest</a>
+                    <a href="#" aria-label="YouTube">🎥 YouTube</a>
+                </div>
+            </div>
+            
+            <div class="footer-section links-section">
+                <h4>Custom Work</h4>
+                <ul>
+                    <li><a href="{{ url_for('category', name='tables') }}">Bespoke Dining Tables</a></li>
+                    <li><a href="{{ url_for('category', name='cutting-boards') }}">End-Grain Cutting Boards</a></li>
+                    <li><a href="{{ url_for('category', name='saunas') }}">Outdoor Cedar Barrel Saunas</a></li>
+                    <li><a href="{{ url_for('configurator') }}">Interactive Design Builder</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section contact-section">
+                <h4>The Workshop</h4>
+                <p>📍 1280 Foundry Way, Suite A<br>Bend, Oregon 97701</p>
+                <p>📞 (541) 555-WOOD<br>✉️ workshop@timberandember.com</p>
+            </div>
+            
+            <div class="footer-section newsletter-section">
+                <h4>Workshop Notes</h4>
+                <p>Subscribe to receive wood care tips, custom build features, and notifications on batch wood sales.</p>
+                <form class="footer-subscribe-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!'); this.reset();">
+                    <input type="email" placeholder="Enter your email" required aria-label="Newsletter email input">
+                    <button type="submit" class="btn-footer">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Timber & Ember LLC. All rights reserved. Handcrafted in Bend, OR.</p>
+            <div class="footer-bottom-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="{{ url_for('dashboard') }}">Admin Dashboard</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript File -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

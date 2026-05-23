@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Get in Touch | Timber & Ember{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="section-container">
+        <div class="section-header" style="margin-bottom: 3.5rem;">
+            <h1 class="section-title" style="font-family: var(--font-heading);">Connect with the Workshop</h1>
+            <p class="section-subtitle">Have questions about timber selections, shipping rates, or design ideas? Fill out our form or drop by our Bend workshop.</p>
+        </div>
+        
+        <div class="contact-layout">
+            <!-- Left Info Panel -->
+            <div class="contact-info-panel">
+                <h3 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; margin-bottom: 2rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; color: var(--color-brand-primary);">
+                    Contact Coordinates
+                </h3>
+                
+                <div class="info-card">
+                    <h4>The Workshop</h4>
+                    <p>📍 1280 Foundry Way, Suite A<br>Bend, Oregon 97701</p>
+                </div>
+                
+                <div class="info-card">
+                    <h4>Direct Lines</h4>
+                    <p>📞 Phone: (541) 555-WOOD (9663)</p>
+                    <p>✉️ Email: workshop@timberandember.com</p>
+                </div>
+                
+                <div class="info-card">
+                    <h4>Workshop Hours</h4>
+                    <p>Monday – Friday: 8:00 AM – 5:00 PM<br>Saturday: By Appointment Only<br>Sunday: Closed</p>
+                </div>
+                
+                <div class="info-card" style="margin-bottom: 0;">
+                    <h4>Shipping Scope</h4>
+                    <p>Local setup in Oregon/Washington. Nationwide freight delivery is fully crated and insured.</p>
+                </div>
+            </div>
+            
+            <!-- Right Contact Form -->
+            <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 3rem; box-shadow: var(--shadow-soft);">
+                <h3 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; margin-bottom: 2rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem;">
+                    Send a Message
+                </h3>
+                
+                <form action="{{ url_for('contact') }}" method="POST">
+                    <div class="form-group">
+                        <label for="contact-name">Your Full Name *</label>
+                        <input type="text" id="contact-name" name="name" required placeholder="e.g. Eleanor Vance">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-email">Email Address *</label>
+                        <input type="email" id="contact-email" name="email" required placeholder="e.g. name@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-msg">Inquiry Details *</label>
+                        <textarea id="contact-msg" name="message" rows="5" required placeholder="Tell us what you have in mind..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        Send General Inquiry
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section with interactive details accordions -->
+<section class="section-padding" style="background-color: var(--color-bg-secondary); border-top: 1px solid var(--color-border);">
+    <div class="section-container" style="max-width: 800px;">
+        <div class="section-header">
+            <h2 class="section-title">Frequently Answered Questions</h2>
+            <p class="section-subtitle">Quick answers to common workshop details.</p>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <!-- FAQ Item 1 -->
+            <details style="background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); padding: 1.5rem; transition: border-color 0.2s ease;" class="faq-details">
+                <summary style="font-weight: 600; cursor: pointer; color: var(--color-text-primary); font-size: 1.05rem; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                    What are your current production lead times?
+                    <span style="color: var(--color-brand-primary); font-size: 0.8rem;">▼</span>
+                </summary>
+                <p style="margin-top: 1rem; color: var(--color-text-secondary); font-size: 0.95rem; line-height: 1.6; text-wrap: pretty;">
+                    Our lead times vary by product size and shop queue. Slabs tables and barrel saunas generally require 6–8 weeks, which covers final hand-selection of lumber, dry kiln checks, assembly, and multi-layered finishes. End-grain cutting boards are typically dispatched within 1–2 weeks, unless custom engraving is requested.
+                </p>
+            </details>
+
+            <!-- FAQ Item 2 -->
+            <details style="background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); padding: 1.5rem; transition: border-color 0.2s ease;" class="faq-details">
+                <summary style="font-weight: 600; cursor: pointer; color: var(--color-text-primary); font-size: 1.05rem; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                    How does nationwide delivery work?
+                    <span style="color: var(--color-brand-primary); font-size: 0.8rem;">▼</span>
+                </summary>
+                <p style="margin-top: 1rem; color: var(--color-text-secondary); font-size: 0.95rem; line-height: 1.6; text-wrap: pretty;">
+                    For dining tables and saunas, we custom-build heavy-duty wooden crates and ship them via freight carriers with liftgate trucks. All freight shipments are fully insured and trackable. We also offer regional White Glove delivery and setup within a 200-mile radius of Bend, Oregon, which includes inside placement, leg assembly, and packing disposal.
+                </p>
+            </details>
+
+            <!-- FAQ Item 3 -->
+            <details style="background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); padding: 1.5rem; transition: border-color 0.2s ease;" class="faq-details">
+                <summary style="font-weight: 600; cursor: pointer; color: var(--color-text-primary); font-size: 1.05rem; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                    How do I care for my solid wood table?
+                    <span style="color: var(--color-brand-primary); font-size: 0.8rem;">▼</span>
+                </summary>
+                <p style="margin-top: 1rem; color: var(--color-text-secondary); font-size: 0.95rem; line-height: 1.6; text-wrap: pretty;">
+                    Our tables are finished with premium hardwax oils which seal the wood grain but allow the natural textures to breathe. For daily care, wipe with a soft cloth slightly dampened with lukewarm water and a drop of pH-neutral soap. Avoid harsh chemicals, glass cleaners, or abrasive pads. We recommend reapplying wood maintenance oil once every 12–18 months to replenish the moisture seal.
+                </p>
+            </details>
+
+            <!-- FAQ Item 4 -->
+            <details style="background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); padding: 1.5rem; transition: border-color 0.2s ease;" class="faq-details">
+                <summary style="font-weight: 600; cursor: pointer; color: var(--color-text-primary); font-size: 1.05rem; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                    Can I specify custom metal bases or wood configurations?
+                    <span style="color: var(--color-brand-primary); font-size: 0.8rem;">▼</span>
+                </summary>
+                <p style="margin-top: 1rem; color: var(--color-text-secondary); font-size: 0.95rem; line-height: 1.6; text-wrap: pretty;">
+                    Yes, absolutely! If our standard customizer options don't cover your exact requirements (e.g., custom epoxy ocean resin colors, specific steel leg powder-coating codes, or unique multi-level saunas), please contact us directly using the message form above or write details in the notes section during configurator checkout.
+                </p>
+            </details>
+        </div>
+    </div>
+</section>
+{% endblock %}

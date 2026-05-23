@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Commission Request Received | Timber & Ember{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="section-container" style="max-width: 650px; text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 1.5rem;">✨</div>
+        <h1 class="section-title" style="font-family: var(--font-heading); margin-bottom: 1rem;">Project Inquiry Received</h1>
+        <p style="color: var(--color-text-secondary); margin-bottom: 3rem; line-height: 1.6; text-wrap: pretty;">Thank you, {{ quote.name }}. Your custom commission request has been logged in our workshop database. Our team will review the lumber requirements and contact you within 24–48 hours at <strong>{{ quote.email }}</strong> with a formal quote and draft schematics.</p>
+        
+        <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 2.5rem; text-align: left; margin-bottom: 3rem; box-shadow: var(--shadow-soft);">
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; color: var(--color-brand-primary);">
+                Inquiry Spec Sheet #{{ quote.id }}
+            </h3>
+            
+            <ul style="list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.95rem;">
+                <li style="display: flex; justify-content: space-between;"><span style="color: var(--color-text-secondary);">Project Category:</span> <strong>{{ category_title }}</strong></li>
+                <li style="display: flex; justify-content: space-between;"><span style="color: var(--color-text-secondary);">Wood Species:</span> <strong>{{ quote.wood_type }}</strong></li>
+                <li style="display: flex; justify-content: space-between;"><span style="color: var(--color-text-secondary);">Dimensions:</span> <strong>{{ quote.dimensions }}</strong></li>
+                <li style="display: flex; justify-content: space-between;"><span style="color: var(--color-text-secondary);">Finish Selected:</span> <strong>{{ quote.finish }}</strong></li>
+                <li style="display: flex; justify-content: space-between; flex-direction: column; gap: 0.25rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.75rem;">
+                    <span style="color: var(--color-text-secondary);">Upgrades & Addons:</span>
+                    <strong style="font-size: 0.85rem; color: var(--color-text-secondary);">{{ quote.addons }}</strong>
+                </li>
+                {% if quote.message %}
+                <li style="display: flex; flex-direction: column; gap: 0.25rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.75rem; margin-top: 0.25rem;">
+                    <span style="color: var(--color-text-secondary);">Customer Message:</span>
+                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5; font-style: italic;">"{{ quote.message }}"</p>
+                </li>
+                {% endif %}
+                <li style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; font-size: 1.15rem;">
+                    <span style="color: var(--color-text-primary); font-weight: 600;">Cost Estimate:</span>
+                    <strong style="color: var(--color-brand-primary); font-size: 1.35rem;">${{ "{:,.2f}".format(quote.estimated_price) }}</strong>
+                </li>
+            </ul>
+        </div>
+        
+        <div style="display: flex; justify-content: center; gap: 1.25rem;">
+            <a href="{{ url_for('configurator') }}" class="btn btn-secondary">Configure Another Build</a>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Return Home</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

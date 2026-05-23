@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Custom {{ category.title }} | Timber & Ember{% endblock %}
+
+{% block content %}
+<!-- Page Hero Section -->
+<section class="page-hero">
+    <div class="page-hero-container">
+        <div>
+            <a href="{{ url_for('index') }}" style="font-size: 0.85rem; color: var(--color-brand-primary); display: inline-flex; align-items: center; gap: 0.25rem; margin-bottom: 1.5rem; font-weight: 500;">
+                ← Back to Homepage
+            </a>
+            <h1 class="section-title" style="font-family: var(--font-heading); line-height: 1.1; margin-bottom: 1rem;">{{ category.title }}</h1>
+            <p style="font-size: 1.15rem; color: var(--color-text-secondary); margin-bottom: 2rem; font-style: italic; line-height: 1.5; text-wrap: pretty;">"{{ category.tagline }}"</p>
+            <p style="color: var(--color-text-secondary); font-size: 1rem; line-height: 1.7; margin-bottom: 2.5rem; text-wrap: pretty;">{{ category.description }}</p>
+            
+            <a href="{{ url_for('configurator', category=category.id) }}" class="btn btn-primary">Customize Your {{ category.id.replace('-', ' ').title() }}</a>
+        </div>
+        <div class="page-hero-img-wrapper">
+            <img src="{{ url_for('static', filename='images/' + category.hero_image) }}" alt="Showcase of custom {{ category.id }}">
+        </div>
+    </div>
+</section>
+
+<!-- Wood Selection Options Details -->
+<section class="section-padding" style="border-bottom: 1px solid var(--color-border);">
+    <div class="section-container">
+        <div class="section-header" style="margin-bottom: 3rem;">
+            <h2 class="section-title">Selected Timber Options</h2>
+            <p class="section-subtitle">We stock local, sustainably-sourced hardwoods. Each species brings a unique grain pattern and tone to your home.</p>
+        </div>
+        
+        <div class="wood-gallery-grid">
+            {% for wood in category.wood_options %}
+            <div class="wood-gallery-card">
+                <h3 class="wood-gallery-title">{{ wood.name }}</h3>
+                <span class="wood-gallery-factor">×{{ wood.price_factor }} Base Rate</span>
+                <p class="wood-gallery-desc">{{ wood.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Construction / Craftsmanship details list -->
+<section class="section-padding">
+    <div class="section-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;">
+        <div>
+            <h2 class="section-title" style="font-family: var(--font-heading); margin-bottom: 1.5rem;">Handmade Standards</h2>
+            <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem; line-height: 1.7;">Each order in our workshop is treated as a custom commission. We do not batch-produce or outsource. A single master woodworker is assigned to select your lumber, hand-mill, shape, sand, and finish your piece from start to finish.</p>
+            <p style="color: var(--color-text-secondary); line-height: 1.7;">Our dedication to craftsmanship means we inspect every board foot for grain alignment, checks, moisture content, and insect markings, turning those natural details into features rather than flaws.</p>
+        </div>
+        
+        <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border); padding: 3rem; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-soft);">
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem;">Material Specifications</h3>
+            <ul class="bullet-list">
+                {% for detail in category.details %}
+                <li>{{ detail }}</li>
+                {% endfor %}
+            </ul>
+            <div style="margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Starting Estimate</span>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-brand-primary);">${{ category.base_price }}</div>
+                </div>
+                <a href="{{ url_for('configurator', category=category.id) }}" class="btn btn-primary">Start Customizing</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

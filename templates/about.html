@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Our Craft & Philosophy | Timber & Ember{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="page-hero-container">
+        <div>
+            <span class="hero-tag" style="margin-bottom: 1rem;">The Timber & Ember Story</span>
+            <h1 class="section-title" style="font-family: var(--font-heading); line-height: 1.1; margin-bottom: 1.5rem;">Time-Honored Woodworking Practices</h1>
+            <p style="font-size: 1.1rem; color: var(--color-text-secondary); line-height: 1.6; text-wrap: pretty;">We bridge traditional master joinery with contemporary Pacific Northwest design. Learn about our sustainable material sourcing, kiln-drying process, and artisanal details.</p>
+        </div>
+        <div class="page-hero-img-wrapper" style="aspect-ratio: 16/10;">
+            <img src="{{ url_for('static', filename='images/hero_bg.png') }}" alt="Timber and Ember wood shop tooling workspace">
+        </div>
+    </div>
+</section>
+
+<!-- Sourcing section -->
+<section class="section-padding">
+    <div class="section-container" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 4rem; align-items: center;">
+        <div>
+            <h2 class="section-title" style="font-family: var(--font-heading); margin-bottom: 1.5rem;">Sustainably Sourced PNW Hardwoods</h2>
+            <p style="color: var(--color-text-secondary); margin-bottom: 1.25rem; line-height: 1.7; text-wrap: pretty;">Every project begins in the forest. We partner with local arborists and certified, sustainable logging operations across Oregon and Washington to source our slabs. We focus heavily on salvaging urban trees—large oaks, walnuts, and maples that have reached the end of their lifespan or were cleared for safety reasons.</p>
+            <p style="color: var(--color-text-secondary); line-height: 1.7; text-wrap: pretty;">Instead of grinding these majestic trees into mulch or firewood, we transport them to our Bend facility, mill them, and air-dry them for up to two years. Afterward, they spend four to six weeks in our dehumidification kiln to stabilize the moisture content to exactly 6-8%, ensuring the wood will not warp or check once in your home.</p>
+        </div>
+        
+        <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border); padding: 3rem; border-radius: var(--border-radius-lg);">
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; color: var(--color-brand-primary);">Our Wood Selection Specs</h3>
+            
+            <ul class="bullet-list">
+                <li><strong>Oregon Black Walnut:</strong> Known for rich chocolate swirls, purple undertones, and golden sapwood margins.</li>
+                <li><strong>Western Bigleaf Maple:</strong> Highly figured quilting and fiddleback curls that catch the ambient light.</li>
+                <li><strong>Pacific White Oak:</strong> Hard, durable, featuring prominent rays and clean, light straw-colored tones.</li>
+                <li><strong>Western Red Cedar:</strong> Aromatic, lightweight, and filled with natural oils that resist insects and decay.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Structural Details / Joinery Techniques -->
+<section class="section-padding" style="background-color: var(--color-bg-secondary); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">Structural Joinery Methods</h2>
+            <p class="section-subtitle">A timber project is only as strong as its connections. We do not hide pocket-hole screws under veneer. We use traditional mechanical joints.</p>
+        </div>
+        
+        <div class="category-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <div style="background: var(--color-bg-primary); padding: 2.5rem; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+                <h4 style="font-family: var(--font-heading); font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--color-brand-primary);">Mortise & Tenon</h4>
+                <p style="font-size: 0.9rem; color: var(--color-text-secondary); line-height: 1.6;">The foundation of wood engineering. By carving a pocket (mortise) in one piece and fitting a corresponding tongue (tenon) from the adjoining piece, we create glue surfaces that are structurally inseparable under load.</p>
+            </div>
+            
+            <div style="background: var(--color-bg-primary); padding: 2.5rem; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+                <h4 style="font-family: var(--font-heading); font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--color-brand-primary);">Butterfly Keys / Bowties</h4>
+                <p style="font-size: 0.9rem; color: var(--color-text-secondary); line-height: 1.6;">When slabs have natural splits or cracks, we stabilize them by chiseling hourglass-shaped inserts across the fissure. The geometry prevents the crack from spreading while adding a gorgeous hand-crafted detail.</p>
+            </div>
+            
+            <div style="background: var(--color-bg-primary); padding: 2.5rem; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+                <h4 style="font-family: var(--font-heading); font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--color-brand-primary);">Season Expansion Support</h4>
+                <p style="font-size: 0.9rem; color: var(--color-text-secondary); line-height: 1.6;">Wood expands and contracts as indoor relative humidity fluctuates. We attach table tops using custom Z-clips or elongated slots in steel brackets, allowing the wood to breathe without stress.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final Call to Action -->
+<section class="section-padding" style="text-align: center;">
+    <div class="section-container" style="max-width: 600px;">
+        <h2 class="section-title" style="font-family: var(--font-heading); margin-bottom: 1rem;">Experience the Difference</h2>
+        <p style="color: var(--color-text-secondary); margin-bottom: 2.5rem; line-height: 1.6;">From chef-grade end grain cutting boards to 8-person backyard barrel saunas, configure your specifications and let us build your heirloom.</p>
+        <a href="{{ url_for('configurator') }}" class="btn btn-primary">Start Your Custom Build</a>
+    </div>
+</section>
+{% endblock %}

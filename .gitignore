@@ -1,0 +1,15 @@
+# Python Virtual Environments
+venv/
+.venv/
+env/
+# Local SQLite Database Journal (Lockfiles)
+timber_ember.db-journal
+
+# Python Caches & Compiled Bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS System Files
+.DS_Store
