@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Order Status | Timber & Ember{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="section-container" style="max-width: 650px; margin: 0 auto;">
+        
+        <div id="loading-panel" style="text-align: center; padding: 4rem 0;">
+            <div style="font-size: 3rem; animation: spin 1.5s linear infinite; display: inline-block; margin-bottom: 1.5rem;">⏳</div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.75rem; margin-bottom: 0.5rem;">Verifying Transaction Details</h2>
+            <p style="color: var(--color-text-secondary); font-size: 0.95rem;">Please wait a moment while we synchronize your build specifications with Stripe...</p>
+        </div>
+
+        <div id="success-panel" style="display: none; text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 1.5rem;">✨</div>
+            <h1 class="section-title" style="font-family: var(--font-heading); margin-bottom: 1rem;">Deposit Confirmed!</h1>
+            <p style="color: var(--color-text-secondary); margin-bottom: 3rem; line-height: 1.6; text-wrap: pretty;">
+                Thank you for your custom commission! Your project deposit has been processed. An official receipt and digital invoice breakdown has been dispatched to <strong id="customer-email-display"></strong>.
+            </p>
+            
+            <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 2.5rem; text-align: left; margin-bottom: 3rem; box-shadow: var(--shadow-soft);">
+                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; color: var(--color-brand-primary);">
+                    Locked Build Specifications
+                </h3>
+                
+                <ul style="list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.95rem;">
+                    <li style="display: flex; justify-content: space-between;"><span style="color: var(--color-text-secondary);">Patron Name:</span> <strong id="spec-name"></strong></li>
+                    <li style="display: flex; justify-content: space-between;"><span style="color: var(--color-text-secondary);">Lumber Species:</span> <strong id="spec-wood"></strong></li>
+                    <li style="display: flex; justify-content: space-between;"><span style="color: var(--color-text-secondary);">Dimensions:</span> <strong id="spec-dimensions"></strong></li>
+                    <li style="display: flex; justify-content: space-between;"><span style="color: var(--color-text-secondary);">Surface Finish:</span> <strong id="spec-finish"></strong></li>
+                    <li style="display: flex; justify-content: space-between; flex-direction: column; gap: 0.25rem; border-top: 1px solid var(--color-border); padding-top: 0.85rem; margin-top: 0.25rem;">
+                        <span style="color: var(--color-text-secondary); margin-bottom: 0.15rem;">Selected Addons & Upgrades:</span>
+                        <strong id="spec-addons" style="font-size: 0.9rem; color: var(--color-brand-primary);"></strong>
+                    </li>
+                </ul>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 1.25rem;">
+                <a href="{{ url_for('configurator') }}" class="btn btn-secondary">Design Another Build</a>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Workshop Home</a>
+            </div>
+        </div>
+
+        <div id="error-panel" style="display: none; text-align: center; padding: 2rem 0;">
+            <div style="font-size: 4rem; margin-bottom: 1.5rem;">❌</div>
+            <h1 class="section-title" style="font-family: var(--font-heading); margin-bottom: 1rem; color: var(--color-error);">Transaction Unsuccessful</h1>
+            <p style="color: var(--color-text-secondary); margin-bottom: 2.5rem; line-height: 1.6; text-wrap: pretty;">
+                The payment session was canceled, timed out, or declined by the issuing bank. No financial charges were finalized. You can safely head back to your workspace configuration matrix to retry.
+            </p>
+            <a href="{{ url_for('configurator') }}" class="btn btn-primary">Return to Configurator</a>
+        </div>
+
+    </div>
+</section>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Snatch the session_id token directly from the browser's browser address bar URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+
+    if (!sessionId) {
+        document.getElementById('loading-panel').style.display = 'none';
+        document.getElementById('error-panel').style.display = 'block';
+        return;
+    }
+
+    try {
+        // 2. Poll your backend route asynchronously to run the secure check on Stripe's server
+        const response = await fetch(`/session-status?session_id=${sessionId}`);
+        const data = await response.json();
+
+        // Turn off the loading text spinner card
+        document.getElementById('loading-panel').style.display = 'none';
+
+        // 3. Evaluate the payment status flag handed down from Stripe
+        if (data.status === 'complete') {
+            // Apply contact context properties
+            document.getElementById('customer-email-display').textContent = data.customer_email || 'your email address';
+            
+            // Extract the custom spec sheet data out of our metadata array payload maps
+            if (data.metadata) {
+                document.getElementById('spec-name').textContent = data.metadata.customer_name || 'Valued Patron';
+                document.getElementById('spec-wood').textContent = data.metadata.wood_type || 'N/A';
+                document.getElementById('spec-dimensions').textContent = data.metadata.dimensions || 'N/A';
+                document.getElementById('spec-finish').textContent = data.metadata.finish || 'N/A';
+                document.getElementById('spec-addons').textContent = data.metadata.addons || 'None Selected';
+            }
+            
+            // Display the receipt card board
+            document.getElementById('success-panel').style.display = 'block';
+            
+        } else {
+            // If status is 'open' or anything else, the workflow broke or was dropped
+            document.getElementById('error-panel').style.display = 'block';
+        }
+
+    } catch (err) {
+        console.error("Critical status polling verification error:", err);
+        document.getElementById('loading-panel').style.display = 'none';
+        document.getElementById('error-panel').style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

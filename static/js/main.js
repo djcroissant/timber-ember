@@ -488,6 +488,95 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Initialize Stripe.js with your publishable test key
+        const stripe = Stripe('pk_test_51Ta6E76fozIRXFzp4xFDKMTojX7AramQdpL15TFEgqs7gAPpZReg6s1yB5ux5RVNcwndUzhUd46LWnYlJvoAbwiU00DHeNBcMf');
+        let embeddedCheckout = null;
+
+        if (modalForm) {
+            modalForm.addEventListener('submit', async (e) => {
+                // 1. Prevent the default browser page refresh
+                e.preventDefault();
+                
+                // Show a loading state on the button
+                const submitBtn = modalForm.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.textContent;
+                submitBtn.textContent = "Securing Checkout...";
+                submitBtn.disabled = true;
+
+                // 2. Define the asynchronous function exactly like the Stripe guide requires
+                const fetchClientSecret = async () => {
+                    // Gather the dynamic configuration specs from your active UI state
+                    const customerData = {
+                        name: document.getElementById('input-name').value,
+                        email: document.getElementById('input-email').value,
+                        phone: document.getElementById('input-phone').value,
+                        message: document.getElementById('input-msg').value,
+                        
+                        category: currentCategory,
+                        wood_type: currentWood,
+                        dimensions: formDimensions.value,
+                        finish: formFinish.value,
+                        estimated_price: formPrice.value,
+                        addons: currentAddons.map(a => a.name).join(', ') || 'None'
+                    };
+
+                    // Send the data package to your Flask app route
+                    const response = await fetch('/create-checkout-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(customerData)
+                    });
+
+                    const sessionData = await response.json();
+                    
+                    if (sessionData.error) {
+                        throw new Error(sessionData.error);
+                    }
+
+                    // On a successful response, alter the modal UI elements
+                    modalForm.style.display = 'none';
+                    document.querySelector('.dialog-title').textContent = "Complete Secure Deposit";
+                    document.getElementById('stripe-checkout-wrapper').style.display = 'block';
+
+                    // Hand the secret string token directly back to Stripe's lifecycle hook
+                    return sessionData.clientSecret;
+                };
+
+                try {
+                    // 3. Initialize Checkout matching the Stripe Guide signature perfectly
+                    embeddedCheckout = await stripe.createEmbeddedCheckoutPage({
+                        fetchClientSecret,
+                    });
+                    
+                    // 4. Mount the secure checkout iframe window
+                    embeddedCheckout.mount('#checkout');
+
+                } catch (err) {
+                    console.error("Stripe integration initialization failed:", err);
+                    alert("Could not secure a checkout window: " + err.message);
+                    
+                    // Reset UI states if things fail
+                    submitBtn.textContent = originalBtnText;
+                    submitBtn.disabled = false;
+                    modalForm.style.display = 'block';
+                    document.getElementById('stripe-checkout-wrapper').style.display = 'none';
+                }
+            });
+        }
+
+        // Clean up the active checkout iframe if the user clicks out/closes the dialog box
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                if (embeddedCheckout) {
+                    embeddedCheckout.destroy();
+                    embeddedCheckout = null;
+                }
+                modalForm.style.display = 'block';
+                document.getElementById('stripe-checkout-wrapper').style.display = 'none';
+                document.querySelector('.dialog-title').textContent = "Submit Quote Request";
+            });
+        }
+
         // Initial setup run
         initCategory(currentCategory);
     }

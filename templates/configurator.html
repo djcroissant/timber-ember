@@ -2,6 +2,10 @@
 
 {% block title %}Interactive Customizer | Timber & Ember{% endblock %}
 
+{% block extra_head %}
+<script src="https://js.stripe.com/dahlia/stripe.js"></script>
+{% endblock %}
+
 {% block content %}
 <section class="section-padding">
     <div class="section-container">
@@ -141,6 +145,12 @@
                 <button type="submit" class="btn btn-primary">Submit Commission Request</button>
             </div>
         </form>
+        
+        <div id="stripe-checkout-wrapper" style="display: none; margin-top: 1rem;">
+            <div id="checkout">
+                <!-- Checkout will insert the payment form here -->
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

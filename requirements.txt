@@ -2,3 +2,4 @@
 flask
 gunicorn
 stripe>=15.1.0
+python-dotenv

@@ -2,6 +2,7 @@
 venv/
 .venv/
 env/
+.env
 # Local SQLite Database & Journal
 timber_ember.db
 timber_ember.db-journal

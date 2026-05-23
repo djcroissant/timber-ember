@@ -1,9 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import os
+import stripe
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 # Use environment variable for session secret key to remain stable in multi-instance containers
-app.secret_key = os.environ.get("SESSION_SECRET_KEY", "timber-ember-default-secret-key-1289")
+app.secret_key = os.environ.get("SESSION_SECRET_KEY")
+
+# Get Stripe secret key
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+client = stripe.StripeClient(STRIPE_SECRET_KEY)
 
 # Categories data dictionary to populate pages and validation
 CATEGORIES_DATA = {
@@ -143,6 +150,79 @@ def submit_quote():
         flash(f"An error occurred while submitting your request: {str(e)}", "error")
         return redirect(url_for('configurator'))
 
+@app.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    try:
+        # Since the checkout form works asynchronously, we grab JSON data sent from the browser
+        data = request.get_json() or {}
+        
+        # 1. Extract the unique woodworking specs from your interactive customizer
+        category_id = data.get('category', 'tables')
+        wood_type = data.get('wood_type', 'Unknown Species')
+        dimensions = data.get('dimensions', 'Custom Dimensions')
+        finish = data.get('finish', 'Standard Finish')
+        addons = data.get('addons', 'None Selected')
+        
+        # 2. Get the customer details entered in the modal
+        customer_name = data.get('name', 'Valued Patron')
+        customer_email = data.get('email')
+        customer_phone = data.get('phone', '')
+        customer_message = data.get('message', '')
+        
+        # Extract the price string from the frontend (e.g., "$1,520.00"), clean it, and make it a float
+        raw_price = data.get('estimated_price', '0')
+        cleaned_price = float(raw_price.replace('$', '').replace(',', '').strip())
+        
+        # Stripe processes all transactions in the smallest currency unit (CENTS)
+        # Example: $1,200.00 becomes 120000 cents
+        unit_amount_cents = int(cleaned_price * 100)
+
+        # Look up the human-readable product title from your CATEGORIES_DATA dictionary
+        category_title = CATEGORIES_DATA.get(category_id, {}).get('title', 'Custom Furniture Build')
+
+        # 3. Request the secure transaction wrapper from Stripe
+        session = client.v1.checkout.sessions.create(
+            params={
+                'ui_mode': 'embedded_page', # Tells Stripe to embed right inside your site layout
+                'mode': 'payment',           # Indicates a one-time purchase
+                'customer_email': customer_email, # Pre-fills the customer's email in the form
+                
+                'line_items': [{
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': f"{category_title} ({wood_type})",
+                            'description': f"Specs: {dimensions} | Finish: {finish}",
+                        },
+                        'unit_amount': unit_amount_cents,
+                    },
+                    'quantity': 1,
+                }],
+                
+                # Automatically sets the return path using whatever domain your app runs on
+                'return_url': request.host_url + 'checkout/return?session_id={CHECKOUT_SESSION_ID}',
+                
+                # CRITICAL STEP: Store your custom build requirements in Stripe's metadata.
+                # This guarantees that the table dimensions are permanently linked to the receipt!
+                'metadata': {
+                    'customer_name': customer_name,
+                    'customer_phone': customer_phone,
+                    'category_id': category_id,
+                    'wood_type': wood_type,
+                    'dimensions': dimensions,
+                    'finish': finish,
+                    'addons': addons,
+                    'workshop_notes': customer_message
+                }
+            },
+        )
+        
+        # Return the client secret key to your JavaScript frontend
+        return jsonify(clientSecret=session.client_secret)
+        
+    except Exception as e:
+        return jsonify(error=str(e)), 400
+
 @app.route('/quote_success')
 def quote_success():
     quote = session.get('quote_data')
@@ -152,6 +232,35 @@ def quote_success():
         
     cat_title = CATEGORIES_DATA.get(quote['category'], {}).get('title', quote['category'])
     return render_template('quote_success.html', quote=quote, category_title=cat_title)
+
+@app.route('/checkout/return')
+def checkout_return():
+    # 1. This endpoint simply serves up the clean return landing template page
+    return render_template('return.html')
+
+@app.route('/session-status', methods=['GET'])
+def session_status():
+    try:
+        # 2. Extract the checkout session ID passed from the URL parameter query string
+        session_id = request.args.get('session_id')
+        if not session_id:
+            return jsonify(error="Missing required session_id parameter"), 400
+            
+        # 3. Retrieve the official transaction state straight from Stripe's servers
+        session = client.v1.checkout.sessions.retrieve(session_id)
+
+        # Convert the entire Stripe object recursively into a standard Python dict
+        session_dict = session.to_dict()
+        
+        # 4. Return the status, email, and the custom woodworking specifications metadata
+        return jsonify(
+            status=session.status, 
+            customer_email=session.customer_details.email if session.customer_details else None,
+            metadata=session_dict.get('metadata', {})
+        )
+    except Exception as e:
+        print("❌ STRIPE ERROR LOG:", str(e))
+        return jsonify(error=str(e)), 400
 
 if __name__ == '__main__':
     # Cloud Run expects the app to bind to PORT environment variable, defaulting to 8080
