@@ -1,6 +1,7 @@
 # Exclude virtual environments
 venv/
 .venv/
+.env
 env/
 
 # Exclude python cache files
